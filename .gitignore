@@ -1,0 +1,10 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+models/
+.env
+:memory:.ses
+tests/__pycache__/

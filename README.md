@@ -44,7 +44,7 @@ Launcher seçenekleri etkin olmalıdır.
 Diğer sistemlerde, yukarıdaki sanal ortamın Python komutuyla:
 
 ```sh
-python -m pip install -r requirements-build.txt
+python -m pip install -r requirements-system.txt
 python build.py
 ```
 

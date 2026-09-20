@@ -8,7 +8,7 @@ Görsel seç → Arka planı kaldır → Şeffaf PNG kaydet.
 Python **3.14 x64** gereklidir.
 
 ```sh
-python -m venv .venv
+python -m venv venv
 ```
 
 Windows:

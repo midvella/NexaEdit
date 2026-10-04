@@ -200,10 +200,14 @@ class App(ctk.CTk):
 
     def redraw(self):
         self.resize_timer = None
+        # Detach old images from panels before creating new ones so that
+        # garbage-collected CTkImage internals don't leave stale Tk refs.
+        for panel in self.panels:
+            panel.configure(image="")
         images = []
         for panel, source in zip(self.panels, (self.source, self.result)):
             if source is None:
-                panel.configure(image=None, text="Henüz görsel yok")
+                panel.configure(text="Henüz görsel yok")
                 continue
             preview = source.copy()
             preview.thumbnail((max(1, panel.winfo_width() - 8), max(1, panel.winfo_height() - 8)), Image.Resampling.LANCZOS)

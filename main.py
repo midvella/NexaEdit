@@ -1,7 +1,16 @@
 """NexaEdit entry point. Heavy inference imports stay off the UI thread."""
 import multiprocessing
 import sys
+import os
 
+class _NullWriter:
+    def write(self, *args, **kwargs): pass
+    def flush(self, *args, **kwargs): pass
+
+if sys.stdout is None:
+    sys.stdout = _NullWriter()
+if sys.stderr is None:
+    sys.stderr = _NullWriter()
 
 def self_test():
     import tempfile

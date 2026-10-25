@@ -8,15 +8,17 @@ from pathlib import Path
 from tkinter import filedialog
 
 import customtkinter as ctk
-from PIL import Image, ImageDraw, ImageTk
+from PIL import Image, ImageDraw, ImageOps, ImageTk
 from processor import Processor, load_image, save_png
 
 
 class App(ctk.CTk):
-    def __init__(self):
+    def __init__(self, listener=None):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
-        super().__init__()
+        super().__init__(className="Nexaedit")
+        self.withdraw()
+        self.listener = listener
         self.title("NexaEdit")
         icon_path = Path(__file__).resolve().parent / "icon.png"
         if icon_path.is_file():
@@ -69,6 +71,7 @@ class App(ctk.CTk):
         self.previews.bind("<Configure>", self.schedule_redraw)
         self.refresh()
         self.poll_timer = self.after(100, self.poll)
+        self.after_idle(self.deiconify)
 
     def refresh(self):
         self.open_button.configure(state="disabled" if self.busy else "normal")
@@ -171,6 +174,16 @@ class App(ctk.CTk):
         return filedialog.asksaveasfilename(parent=self, title="Şeffaf PNG kaydet", initialfile=filename, defaultextension=".png", filetypes=[("PNG", "*.png")])
 
     def poll(self):
+        if self.listener is not None:
+            try:
+                connection, _ = self.listener.accept()
+            except BlockingIOError:
+                pass
+            else:
+                connection.close()
+                self.deiconify()
+                self.lift()
+                self.focus_force()
         try:
             kind, value = self.events.get_nowait()
         except queue.Empty:
@@ -190,7 +203,8 @@ class App(ctk.CTk):
             elif kind == "saved":
                 self.status.configure(text=f"Kaydedildi: {value}")
             self.refresh()
-            self.redraw()
+            if kind in ("loaded", "removed"):
+                self.redraw()
         self.poll_timer = self.after(100, self.poll)
 
     def schedule_redraw(self, event=None):
@@ -209,8 +223,10 @@ class App(ctk.CTk):
             if source is None:
                 panel.configure(text="Henüz görsel yok")
                 continue
-            preview = source.copy()
-            preview.thumbnail((max(1, panel.winfo_width() - 8), max(1, panel.winfo_height() - 8)), Image.Resampling.LANCZOS)
+            size = (max(1, panel.winfo_width() - 8), max(1, panel.winfo_height() - 8))
+            preview = source
+            if source.width > size[0] or source.height > size[1]:
+                preview = ImageOps.contain(source, size, Image.Resampling.LANCZOS)
             background = Image.new("RGBA", preview.size, "#292c33")
             draw = ImageDraw.Draw(background)
             for y in range(0, preview.height, 12):

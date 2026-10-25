@@ -8,7 +8,7 @@ if not model.is_file():
 a = Analysis(
     [str(root / 'main.py')],
     pathex=[str(root)],
-    datas=[(str(model), 'models'), (str(root / 'icon.svg'), '.'), (str(root / 'icon.png'), '.')] + collect_data_files('customtkinter') + copy_metadata('rembg'),
+    datas=[(str(model), 'models'), (str(root / 'icon.png'), '.')] + collect_data_files('customtkinter') + copy_metadata('rembg'),
     hiddenimports=collect_submodules('rembg.sessions') + collect_submodules('scipy'),
     excludes=['kivy', 'torch', 'tensorflow', 'IPython', 'pytest'],
 )

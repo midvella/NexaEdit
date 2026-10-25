@@ -32,7 +32,9 @@ Exec="$ROOT/.venv/bin/python" "$ROOT/main.py"
 Icon=nexaedit
 Terminal=false
 Type=Application
-Categories=Graphics;Utility;
+StartupWMClass=Nexaedit
+StartupNotify=false
+Categories=Graphics;
 EOF
 chmod +x "$HOME/.local/share/applications/nexaedit.desktop"
 if command -v update-desktop-database >/dev/null 2>&1; then

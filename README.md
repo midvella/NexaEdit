@@ -8,7 +8,7 @@ Görsel seç → Arka planı kaldır → Şeffaf PNG kaydet.
 Python **3.14 x64** gereklidir.
 
 ```sh
-python -m venv venv
+python -m venv .venv
 ```
 
 Windows:
@@ -44,7 +44,7 @@ Launcher seçenekleri etkin olmalıdır.
 Diğer sistemlerde, yukarıdaki sanal ortamın Python komutuyla:
 
 ```sh
-python -m pip install -r requirements-system.txt
+python -m pip install -r requirements.txt "pyinstaller>=6.22.0"
 python build.py
 ```
 
@@ -71,6 +71,7 @@ Linux paketini hedeflediğiniz en eski Linux dağıtımı üzerinde derleyin.
 - EXIF yönü düzeltilir; animasyonlarda ilk kare kullanılır.
 - Çıktı orijinal piksel boyutunda RGBA PNG'dir; önizleme yalnızca ekranda küçültülür.
 - Aynı anda tek işlem yapılır. Model yükleme, işleme ve dosya işlemleri arka plandadır.
+- Linux'ta tekrar başlatmak açık pencereyi öne getirir. Görev çubuğu simgesi `nexaedit.desktop` ile eşleşir; uygulama menüsünden sabitlenebilir.
 - Kaynak görselin aynı yoluna kaydetme engellenir. Kayıt hatasında mevcut hedef korunur.
 - CPU kullanılır; CUDA/GPU kurulumu gerekmez. İşleme süresi ve maske kalitesi görsele/donanıma bağlıdır.
 - Uygulamayı işlem sırasında kapatmak devam eden işi sonlandırır.

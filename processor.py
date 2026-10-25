@@ -2,6 +2,7 @@
 import os
 import sys
 import tempfile
+import warnings
 from pathlib import Path
 from PIL import Image, ImageOps
 
@@ -9,8 +10,12 @@ MODEL = "u2net"
 
 
 def load_image(path):
-    with Image.open(path) as image:
-        return ImageOps.exif_transpose(image).convert("RGBA")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", Image.DecompressionBombWarning)
+        with Image.open(path) as image:
+            if image.width * image.height > 25_000_000:
+                raise ValueError("Görsel en fazla 25 megapiksel olabilir.")
+            return ImageOps.exif_transpose(image).convert("RGBA")
 
 
 def save_png(image, destination):

@@ -16,7 +16,7 @@ if errorlevel 1 goto fail
 
 .venv\Scripts\python.exe -m pip install --upgrade pip
 if errorlevel 1 goto fail
-.venv\Scripts\python.exe -m pip install -r requirements-build.txt
+.venv\Scripts\python.exe -m pip install -r requirements.txt "pyinstaller>=6.22.0"
 if errorlevel 1 goto fail
 
 .venv\Scripts\python.exe build.py

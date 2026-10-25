@@ -2,6 +2,29 @@
 import multiprocessing
 import sys
 import os
+import errno
+import socket
+
+
+def claim_instance():
+    """Linux: activate the existing window, or keep its process-owned socket."""
+    if not sys.platform.startswith("linux"):
+        return None
+    address = f"\0nexaedit-{os.getuid()}-{os.environ.get('DISPLAY', '')}"
+    listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        listener.bind(address)
+    except OSError as error:
+        listener.close()
+        if error.errno != errno.EADDRINUSE:
+            raise
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+            client.settimeout(2)
+            client.connect(address)
+        raise SystemExit(0)
+    listener.listen(8)
+    listener.setblocking(False)
+    return listener
 
 class _NullWriter:
     def write(self, *args, **kwargs): pass
@@ -37,8 +60,13 @@ if __name__ == "__main__":
     if "--self-test" in sys.argv:
         self_test()
     else:
-        from app import App
-        app = App()
-        if "--smoke-gui" in sys.argv:
-            app.after(1200, app.destroy)
-        app.mainloop()
+        listener = None if "--smoke-gui" in sys.argv else claim_instance()
+        try:
+            from app import App
+            app = App(listener=listener)
+            if "--smoke-gui" in sys.argv:
+                app.after(1200, app.destroy)
+            app.mainloop()
+        finally:
+            if listener is not None:
+                listener.close()
